@@ -45,11 +45,15 @@ function Teams() {
 
   return (
     <div className="teampage">
-      <div>Select a Team</div>
-      <div>
+      <h3 style={{ textAlign: 'center' }}>Select A Team</h3>
+      <hr />
+      <div style={{ height: 350, overflow: 'auto' }}>
         <List>
           {teams?.map((team, i) => (
-            <ListItem key={i}>
+            <ListItem
+              key={i}
+              sx={{ backgroundColor: (i % 2 == 0) ? '#333333' : '#232323' }}
+            >
               <ListItemButton sx={{
                 '&:hover': {
                   backgroundColor: '#575757'

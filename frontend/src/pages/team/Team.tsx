@@ -8,37 +8,13 @@ import TeamMenu from './TeamMenu';
 import DeleteTeam from './DeleteTeam';
 import EditTeam from './EditTeam';
 import PositionSummary from './PositionSummary';
-
-const mockTeam =
-{
-  teamId: 1,
-  teamName: 'Westerville United',
-  city: 'Westerville',
-  state: 'OH'
-}
-
-const mockPlayers = [
-  { playerId: 1, teamId: 1, first: "Lauryn", last: "White", positions: ['CM', 'CDM', 'CAM'] },
-  { playerId: 2, teamId: 1, first: "Makayla", last: "Perry", positions: ['LW', 'LM', 'RW', 'RM', 'ST', 'CF', 'LB', 'RB'] },
-  { playerId: 3, teamId: 1, first: "Margaret", last: "Owsiany", positions: ['LW', 'LM', 'RW', 'RM', 'ST', 'CF', 'CAM'] },
-  { playerId: 4, teamId: 1, first: "Phoebe", last: "Kraus", positions: ['LB', 'RB'] },
-  { playerId: 5, teamId: 1, first: "Kaycee", last: "Johnston", positions: ['CB', 'CDM'] },
-  { playerId: 1, teamId: 1, first: "Lauryn", last: "White", positions: ['CM', 'CDM', 'CAM'] },
-  { playerId: 2, teamId: 1, first: "Makayla", last: "Perry", positions: ['LW', 'LM', 'RW', 'RM', 'ST', 'CF', 'LB', 'RB'] },
-  { playerId: 3, teamId: 1, first: "Margaret", last: "Owsiany", positions: ['LW', 'LM', 'RW', 'RM', 'ST', 'CF', 'CAM'] },
-  { playerId: 4, teamId: 1, first: "Phoebe", last: "Kraus", positions: ['LB', 'RB'] },
-  { playerId: 5, teamId: 1, first: "Kaycee", last: "Johnston", positions: ['CB', 'CDM'] }
-]
-
-function getSummary() {
-  // TODO
-}
+import Formations from './Formations';
 
 function Team() {
-  const navigate = useNavigate();
   const [team, setTeam] = useState<any | null>(null);
   const [teamSummary, setTeamSummary] = useState<any | null>(null);
   const [players, setPlayers] = useState<any[] | null>(null);
+  const [formations, setFormations] = useState<any[] | null>(null);
   const [isOpen, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -74,6 +50,17 @@ function Team() {
     setDeleteOpen(true);
   }
 
+  const handleFormationClick = () => {
+    axios.get("http://localhost:5000/api/team/" + teamId + "/formations")
+      .then((response) => {
+        setFormations(response.data)
+        console.log("Team formations successfully fetched", response);
+      })
+      .catch((error) => {
+        console.error("Error fetching this team formations", error);
+      })
+  }
+
 
   return (
     <div>
@@ -103,11 +90,12 @@ function Team() {
             <Button
               variant='contained'
               sx={{ backgroundColor: '#089f13' }}
-              onClick={() => { }}
+              onClick={() => handleFormationClick()}
             >
               View Compatible Formations
             </Button>
           </div>
+          <Formations formations={formations} />
           <AddPlayer
             isOpen={isOpen}
             setOpen={setOpen}

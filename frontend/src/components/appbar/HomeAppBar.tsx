@@ -2,9 +2,9 @@ import { AppBar, IconButton, Toolbar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import './HomeAppBar.css';
+import { useNavigate } from 'react-router-dom';
 
 function HomeAppBar() {
-
 
   return (
     <AppBar position="static" sx={{ backgroundColor: '#121212' }}>
