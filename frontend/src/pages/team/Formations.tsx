@@ -12,7 +12,8 @@ function Formations({ formations }: params) {
     <>
       {formations ?
         <div>
-          <hr style={{ marginTop: 30 }} />
+          <h4 style={{ marginTop: 50 }}>Compatible Formations</h4>
+          <hr />
           <List>
             {formations?.map((formation, i) => (
               <ListItem key={i}>

@@ -12,11 +12,11 @@ function AddPlayer({ isOpen, setOpen, team_id, setTeam }: any) {
 
   useEffect(() => {
     if (isOpen === false) return;
-    setPositions([
-      "CAM", "CB", "CDM", "CF", "CM",
-      "GK", "LB", "LM", "LW", "RB",
-      "RM", "RW", "ST"
-    ])
+    // setPositions([
+    //   "CAM", "CB", "CDM", "CF", "CM",
+    //   "GK", "LB", "LM", "LW", "RB",
+    //   "RM", "RW", "ST"
+    // ])
 
     axios.get("http://localhost:5000/api/allPositions")
       .then((response) => {

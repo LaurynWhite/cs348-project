@@ -4,21 +4,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const mockTeams = [
-  {
-    teamId: 1,
-    teamName: 'Westerville United',
-    city: 'Westerville',
-    state: 'OH'
-  },
-  {
-    teamId: 2,
-    teamName: 'Columbus Crew',
-    city: 'Columbus',
-    state: 'OH'
-  },
-]
-
 function Teams() {
   const navigate = useNavigate();
   const [teams, setTeams] = useState<any[] | null>(null);

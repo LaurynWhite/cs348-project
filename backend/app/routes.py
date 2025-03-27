@@ -1,8 +1,7 @@
-import copy
 from flask import Flask, jsonify, request
 from app.models import Team, Player, Positions, Plays, Formation, FormationPositions
 from app.database import db
-from sqlalchemy import text
+from sqlalchemy import bindparam, not_, select, text
 
 app = Flask(__name__)
 
@@ -89,36 +88,7 @@ def init_routes(app):
       {'position': stat.position,
         'num_players': stat.num_players}
       for stat in summary])
-  
-  @app.route('/api/team/<int:teamId>/formations', methods=['GET'])
-  def get_team_formations(teamId):
-    query = text(
-      """
-        SELECT F.formation_name
-        FROM formation F JOIN formationpositions FP ON F.formation_id = FP.formation_id
-        LEFT OUTER JOIN (
-          SELECT positions.position, COUNT(plays.player_id) AS num_players
-          FROM positions LEFT OUTER JOIN plays ON positions.position = plays.position
-          LEFT OUTER JOIN player ON plays.player_id = player.player_id
-          WHERE player.team_id = :team_id OR player.team_id IS NULL
-          GROUP BY positions.position) AS summary
-        ON FP.position = summary.position
-        GROUP BY F.formation_name
-        HAVING COUNT(CASE WHEN summary.num_players < FP.num_positions THEN 1 ELSE NULL END) = 0;
-       """)
-    
-    result = db.session.execute(query, {"team_id": teamId}).fetchall()
-    db.session.close()
-    
-    formations = []
-    for formation in result:
-      formations.append(formation.formation_name)
-      
-    return formations
-    
-    
-    
-    # return jsonify([formation['formation_name']] for formation in formations)
+
   
   @app.route('/api/team/edit', methods=['POST'])
   def edit_team():
@@ -168,3 +138,86 @@ def init_routes(app):
       db.session.commit()
       db.session.close()
       return jsonify({"message": "Player created successfully!"}), 201
+    
+  @app.route('/api/team/<int:teamId>/formations', methods=['GET'])
+  def get_team_formations(teamId):
+    query = text(
+      """
+        SELECT F.formation_name
+        FROM formation F JOIN formationpositions FP ON F.formation_id = FP.formation_id
+        LEFT OUTER JOIN (
+          SELECT positions.position, COUNT(plays.player_id) AS num_players
+          FROM positions LEFT OUTER JOIN plays ON positions.position = plays.position
+          LEFT OUTER JOIN player ON plays.player_id = player.player_id
+          WHERE player.team_id = :team_id OR player.team_id IS NULL
+          GROUP BY positions.position) AS summary
+        ON FP.position = summary.position
+        GROUP BY F.formation_name
+        HAVING COUNT(CASE WHEN summary.num_players < FP.num_positions THEN 1 ELSE NULL END) = 0;
+       """)
+    
+    result = db.session.execute(query, {"team_id": teamId}).fetchall()
+    db.session.close()
+    
+    formations = []
+    for formation in result:
+      formations.append(formation.formation_name)
+      
+    return formations
+  
+  @app.route('/api/filteredFormations', methods=['POST'])
+  def get_filtered_formations():
+    
+    # query = text("""
+    #     SELECT f.formation_name
+    #     FROM formation f
+    #     WHERE f.formation_name NOT IN
+    #       (SELECT formation.formation_name
+    #       FROM formation JOIN formationpositions ON formation.formation_id = formationpositions.formation_id
+    #       WHERE formationpositions.position IN :excluded_positions
+    #       GROUP BY formation.formation_name)
+    # """)
+    
+    # data = request.get_json()
+    # excluded_positions = tuple(data)
+    # # print(excluded_positions)
+    # query.bindparams(bindparam("excluded_positions", expanding=True))
+    # result = db.session.execute(query, {'excluded_positions':data})
+    # print(result)
+    
+
+    # # result = db.session.execute(query, excluded_positions).fetchall()
+    # # result = db.session.execute(text(query), {'excluded_positions': excluded_positions}).fetchall()
+    
+    # # placeholders = ', '.join(['%s'] * len(excluded_positions))
+    # # query = query.format(placeholders=placeholders)
+
+    # # Now execute the query with the values
+    # # result = db.session.execute(text(query), excluded_positions).fetchall()
+    
+    # formations = []
+    # for formation in result:
+    #   formations.append(formation.formation_name)
+    
+    # return formations
+    
+    excluded_positions = request.get_json()
+    
+    subquery = (
+        db.session.query(Formation.formation_name)
+        .join(FormationPositions, Formation.formation_id == FormationPositions.formation_id)
+        .filter(FormationPositions.position.in_(excluded_positions))
+        .group_by(Formation.formation_name)
+        .subquery()
+    )
+
+    # Main query: Select formations that are NOT in the subquery
+    formations = (
+        db.session.query(Formation.formation_name)
+        .filter(~Formation.formation_name.in_(select(subquery.c.formation_name)))
+        .all()
+    )
+
+    # Convert the result into a list of formation names
+    return [formation[0] for formation in formations]
+  

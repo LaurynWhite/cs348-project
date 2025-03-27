@@ -1,6 +1,6 @@
 import { Button, Divider, IconButton, List, ListItem, ListItemButton } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Players from './Players';
 import axios from 'axios';
 import AddPlayer from '../add-player/AddPlayer';
@@ -9,6 +9,7 @@ import DeleteTeam from './DeleteTeam';
 import EditTeam from './EditTeam';
 import PositionSummary from './PositionSummary';
 import Formations from './Formations';
+import FilteredFormations from './FilteredFormations';
 
 function Team() {
   const [team, setTeam] = useState<any | null>(null);
@@ -18,6 +19,7 @@ function Team() {
   const [isOpen, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { teamId } = useParams();
 
   useEffect(() => {
@@ -54,12 +56,14 @@ function Team() {
     axios.get("http://localhost:5000/api/team/" + teamId + "/formations")
       .then((response) => {
         setFormations(response.data)
+        setSearchOpen(false)
         console.log("Team formations successfully fetched", response);
       })
       .catch((error) => {
         console.error("Error fetching this team formations", error);
       })
   }
+
 
 
   return (
@@ -89,6 +93,16 @@ function Team() {
             </Button>
             <Button
               variant='contained'
+              sx={{ backgroundColor: '#005304' }}
+              onClick={() => {
+                setSearchOpen(true)
+                setFormations(null)
+              }}
+            >
+              Search Formations
+            </Button>
+            <Button
+              variant='contained'
               sx={{ backgroundColor: '#089f13' }}
               onClick={() => handleFormationClick()}
             >
@@ -96,6 +110,9 @@ function Team() {
             </Button>
           </div>
           <Formations formations={formations} />
+          <FilteredFormations
+            searchOpen={searchOpen}
+          />
           <AddPlayer
             isOpen={isOpen}
             setOpen={setOpen}
