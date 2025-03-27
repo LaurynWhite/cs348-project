@@ -7,6 +7,7 @@ import AddPlayer from '../add-player/AddPlayer';
 import TeamMenu from './TeamMenu';
 import DeleteTeam from './DeleteTeam';
 import EditTeam from './EditTeam';
+import PositionSummary from './PositionSummary';
 
 const mockTeam =
 {
@@ -36,6 +37,7 @@ function getSummary() {
 function Team() {
   const navigate = useNavigate();
   const [team, setTeam] = useState<any | null>(null);
+  const [teamSummary, setTeamSummary] = useState<any | null>(null);
   const [players, setPlayers] = useState<any[] | null>(null);
   const [isOpen, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -53,6 +55,14 @@ function Team() {
       })
       .catch((error) => {
         console.error("Error fetching this team", error);
+      })
+    axios.get("http://localhost:5000/api/team/" + teamId + "/summary")
+      .then((response) => {
+        setTeamSummary(response.data)
+        console.log("Team summary successfully fetched", response);
+      })
+      .catch((error) => {
+        console.error("Error fetching this team summary", error);
       })
   }, [team])
 
@@ -74,6 +84,7 @@ function Team() {
           <div style={{ display: 'flex' }}>
             <div style={{ width: 150, marginLeft: 10 }}>
               <h4>Position Summary</h4>
+              <PositionSummary positionSummary={teamSummary} />
             </div>
             <hr />
             <div style={{ width: 500, marginLeft: 10 }}>

@@ -28,7 +28,6 @@ function EditTeam({ isOpen, setOpen, team }: any) {
       city: city,
       state: selectedState
     };
-    console.log(updatedTeam);
     axios
       .post("http://localhost:5000/api/team/edit", updatedTeam)
       .then((response) => {
