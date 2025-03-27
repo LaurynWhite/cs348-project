@@ -11,3 +11,19 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+html {
+  background-color: #232323;
+}
+
+#root {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  color-scheme: light dark;
+  background-color: #232323;
+  color: white;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

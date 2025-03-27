@@ -1,0 +1,7 @@
+.appbar {
+  background-color: #595959;
+}
+
+.appbar-title {
+  flex-grow: 1;
+}
