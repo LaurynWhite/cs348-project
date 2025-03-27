@@ -1,16 +1,17 @@
 import { Box, Button, Card, CardContent, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { states } from '../../data/data';
 
 function CreateTeam() {
-  const [states, setStates] = useState<any[] | null>(null);
-  const teamName = useState<String>("");
-  const city = useState<String>("");
-  const selectedState = useState<String>("");
+  const [teamName, setTeamName] = useState<String>("");
+  const [city, setCity] = useState<String>("");
+  const [selectedState, setSelectedState] = useState<String>("");
   const navigate = useNavigate();
 
-  const handleStateChange = () => {
-    // TODO
+  const handleStateChange = (state: String) => {
+    setSelectedState(state)
   }
 
   const handleCancel = () => {
@@ -18,7 +19,21 @@ function CreateTeam() {
   }
 
   const handleConfirm = () => {
-    // TODO
+    const newTeam = {
+      teamName: teamName,
+      city: city,
+      state: selectedState
+    };
+    axios
+      .post("http://localhost:5000/api/createTeam", newTeam)
+      .then((response) => {
+        console.log("Data saved successfully", response);
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("Error creating a new team", error);
+      });
+
   }
 
 
@@ -41,6 +56,8 @@ function CreateTeam() {
           color="success"
           fullWidth
           focused
+          value={teamName}
+          onChange={(event) => setTeamName(event.target.value)}
           sx={{
             '& .MuiInputBase-input': {
               color: 'white',
@@ -54,6 +71,8 @@ function CreateTeam() {
             variant="filled"
             color="success"
             focused
+            value={city}
+            onChange={(event) => setCity(event.target.value)}
             sx={{
               '& .MuiInputBase-input': {
                 color: 'white',
@@ -68,8 +87,9 @@ function CreateTeam() {
             <Select
               labelId="demo-simple-select-filled-label"
               value={selectedState}
-              onChange={handleStateChange}
+              // onChange={() => handleStateChange(state)}
               sx={{
+                color: 'white',
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
                     borderColor: '#4caf50', // Change border color of the select field to success green
@@ -90,7 +110,12 @@ function CreateTeam() {
                 <em>---</em>
               </MenuItem>
               {states?.map((state, i) => (
-                <MenuItem key={i} value={state}>{state}</MenuItem>
+                <MenuItem
+                  key={i}
+                  value={state}
+                  onClick={() => handleStateChange(state)}
+                >{state}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -106,7 +131,7 @@ function CreateTeam() {
           <Button
             variant='contained'
             sx={{ width: 100, backgroundColor: 'green' }}
-            onClick={() => { }}
+            onClick={() => handleConfirm()}
           >
             Confirm
           </Button>

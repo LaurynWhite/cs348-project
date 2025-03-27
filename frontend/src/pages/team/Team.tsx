@@ -1,7 +1,8 @@
 import { Button, Divider, List, ListItem, ListItemButton } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Players from './Players';
+import axios from 'axios';
 
 const mockTeam =
 {
@@ -30,17 +31,30 @@ function getSummary() {
 
 function Team() {
   const navigate = useNavigate();
-  // const [team, setTeam] = useState<any | null>(null);
-  const [team, setTeam] = useState<any | null>(mockTeam);
+  const [team, setTeam] = useState<any | null>(null);
+  // const [team, setTeam] = useState<any | null>(mockTeam);
   const [players, setPlayers] = useState<any[] | null>(mockPlayers);
   // const [players, setPlayers] = useState<any[] | null>(null);
-  const { groupId } = useParams();
+  const { teamId } = useParams();
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/team/" + teamId)
+      .then((response) => {
+        setTeam(response.data)
+        setPlayers(response.data.players)
+        console.log("Team successfully fetched", response);
+      })
+      .catch((error) => {
+        console.error("Error fetching this team", error);
+      })
+  }, [])
+
 
   return (
     <div>
       {team ?
         <>
-          <h3 style={{ textAlign: 'center' }}>{team.teamName} &mdash; {team.city}, {team.state}</h3>
+          <h3 style={{ textAlign: 'center' }}>{team.team_name} &mdash; {team.city}, {team.state}</h3>
           <hr />
           <div style={{ display: 'flex' }}>
             <div style={{ width: 150, marginLeft: 10 }}>
