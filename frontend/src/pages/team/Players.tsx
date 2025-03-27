@@ -17,7 +17,7 @@ function Players({ players }: params) {
       <div style={{ height: 350, overflow: 'auto' }}>
         <List>
           {players?.map((player, i) => (
-            <ListItem sx={{ backgroundColor: (i % 2 == 0) ? '#333333' : '#232323' }}>
+            <ListItem key={i} sx={{ backgroundColor: (i % 2 == 0) ? '#333333' : '#232323' }}>
               <ListItemButton sx={{
                 '&:hover': {
                   backgroundColor: '#575757'

@@ -1,8 +1,12 @@
-import { Button, Divider, List, ListItem, ListItemButton } from '@mui/material';
+import { Button, Divider, IconButton, List, ListItem, ListItemButton } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Players from './Players';
 import axios from 'axios';
+import AddPlayer from '../add-player/AddPlayer';
+import TeamMenu from './TeamMenu';
+import DeleteTeam from './DeleteTeam';
+import EditTeam from './EditTeam';
 
 const mockTeam =
 {
@@ -32,12 +36,15 @@ function getSummary() {
 function Team() {
   const navigate = useNavigate();
   const [team, setTeam] = useState<any | null>(null);
-  // const [team, setTeam] = useState<any | null>(mockTeam);
-  const [players, setPlayers] = useState<any[] | null>(mockPlayers);
-  // const [players, setPlayers] = useState<any[] | null>(null);
+  const [players, setPlayers] = useState<any[] | null>(null);
+  const [isOpen, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const { teamId } = useParams();
 
   useEffect(() => {
+    if (team !== null) return;
+
     axios.get("http://localhost:5000/api/team/" + teamId)
       .then((response) => {
         setTeam(response.data)
@@ -47,7 +54,15 @@ function Team() {
       .catch((error) => {
         console.error("Error fetching this team", error);
       })
-  }, [])
+  }, [team])
+
+  const handleEdit = () => {
+    setEditOpen(true);
+  }
+
+  const handleDelete = () => {
+    setDeleteOpen(true);
+  }
 
 
   return (
@@ -64,12 +79,13 @@ function Team() {
             <div style={{ width: 500, marginLeft: 10 }}>
               <Players players={players} />
             </div >
+            <TeamMenu handleEdit={handleEdit} handleDelete={handleDelete} />
           </div>
           <div style={{ marginTop: 30, display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
             <Button
               variant='contained'
               sx={{ backgroundColor: '#005304' }}
-              onClick={() => { }}
+              onClick={() => setOpen(true)}
             >
               Add Player
             </Button>
@@ -81,6 +97,23 @@ function Team() {
               View Compatible Formations
             </Button>
           </div>
+          <AddPlayer
+            isOpen={isOpen}
+            setOpen={setOpen}
+            team_id={teamId}
+            setTeam={setTeam}
+          />
+          <EditTeam
+            isOpen={editOpen}
+            setOpen={setEditOpen}
+            team={team}
+            setTeam={setTeam}
+          />
+          <DeleteTeam
+            isOpen={deleteOpen}
+            setOpen={setDeleteOpen}
+            team_id={teamId}
+          />
         </>
         : <></>
       }
