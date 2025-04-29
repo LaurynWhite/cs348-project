@@ -42,8 +42,8 @@ function TeamMenu({ handleEdit, handleDelete }: any) {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleEdit}>Edit Team</MenuItem>
-        <MenuItem onClick={handleDelete}>Delete Team</MenuItem>
+        <MenuItem onClick={handleEditClick}>Edit Team</MenuItem>
+        <MenuItem onClick={handleDeleteClick}>Delete Team</MenuItem>
       </Menu>
     </div>
   );

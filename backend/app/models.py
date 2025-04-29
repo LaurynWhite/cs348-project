@@ -1,3 +1,4 @@
+from sqlalchemy import Index
 from app.database import db
 
 class Team(db.Model):
@@ -8,6 +9,10 @@ class Team(db.Model):
   city = db.Column(db.String(30), nullable=False)
   state = db.Column(db.String(30), nullable=False)
   
+  __table_args__ = (
+    Index('team_id_index', team_id, mysql_using='btree'),
+  )
+
   # One to many relationship
   # players = db.relationship('Player', backref='player', lazy=True)
   players = db.relationship("Player", backref="team", cascade="all, delete")
@@ -16,7 +21,7 @@ class Team(db.Model):
     self.team_name = team_name
     self.city = city
     self.state = state
-
+    
 
 class Player(db.Model):
   __tablename__ = "Player"
@@ -26,13 +31,16 @@ class Player(db.Model):
   first = db.Column(db.String(30), nullable=False)
   last = db.Column(db.String(30), nullable=False)
   
+  __table_args__ = (
+    Index('player_team_index', team_id, mysql_using='btree'), 
+  )
+  
   plays = db.relationship("Plays", backref="player", cascade="all, delete")
   
   def __init__(self, team_id, first, last):
     self.team_id = team_id
     self.first = first
     self.last = last
-
 
 
 class Positions(db.Model):
@@ -52,6 +60,7 @@ class Plays(db.Model):
 
   __table_args__ = (
         db.PrimaryKeyConstraint('player_id', 'position'),
+        Index('plays_index', player_id, mysql_using='btree'),
     )
 
   def __init__(self, player_id, position):
@@ -78,8 +87,9 @@ class FormationPositions(db.Model):
   num_positions = db.Column(db.Integer)
 
   __table_args__ = (
-        db.PrimaryKeyConstraint('formation_id', 'position'),
-    )
+    db.PrimaryKeyConstraint('formation_id', 'position'),
+    Index('formation_position_index', formation_id, mysql_using='btree'),
+  )
 
   def __init__(self, formation_id, position, num_positions):
     self.formation_id = formation_id
