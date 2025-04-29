@@ -65,7 +65,6 @@ function EditTeam({ isOpen, setOpen, team }: any) {
               label="Team Name"
               variant="filled"
               color="success"
-              // fullWidth
               focused
               value={teamName}
               onChange={(event) => setTeamName(event.target.value)}
@@ -99,21 +98,20 @@ function EditTeam({ isOpen, setOpen, team }: any) {
                 <Select
                   labelId="demo-simple-select-filled-label"
                   value={selectedState}
-                  // onChange={() => handleStateChange(state)}
                   sx={{
                     color: 'white',
                     '& .MuiOutlinedInput-root': {
                       '& fieldset': {
-                        borderColor: '#4caf50', // Change border color of the select field to success green
+                        borderColor: '#4caf50',
                       },
                       '&:hover fieldset': {
-                        borderColor: '#388e3c', // Change the border color on hover to a darker green
+                        borderColor: '#388e3c',
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#2e7d32', // Change border color when focused
+                        borderColor: '#2e7d32',
                       },
                       '& .MuiSelect-icon': {
-                        color: '#4caf50', // Set the dropdown arrow color to success green
+                        color: '#4caf50',
                       },
                     },
                   }}

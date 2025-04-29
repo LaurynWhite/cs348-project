@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 def init_routes(app):
 
-  # ORM - convert
+  # ORM
   @app.route('/api/createTeam', methods=['POST'])
   def create_team():
       data = request.get_json()
@@ -93,7 +93,7 @@ def init_routes(app):
         'num_players': stat.num_players}
       for stat in summary])
 
-  # ORM - convert
+  # ORM
   @app.route('/api/team/edit', methods=['POST'])
   def edit_team():
     data = request.get_json()
