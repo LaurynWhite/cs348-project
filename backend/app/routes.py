@@ -1,12 +1,13 @@
 from flask import Flask, jsonify, request
 from app.models import Team, Player, Positions, Plays, Formation, FormationPositions
 from app.database import db
-from sqlalchemy import bindparam, not_, select, text
+from sqlalchemy import select, text
 
 app = Flask(__name__)
 
 def init_routes(app):
 
+  # ORM - convert
   @app.route('/api/createTeam', methods=['POST'])
   def create_team():
       data = request.get_json()
@@ -16,6 +17,7 @@ def init_routes(app):
       db.session.close()
       return jsonify({"message": "Team created successfully!"}), 201
   
+  # ORM
   @app.route('/api/teams', methods=['GET'])
   def get_teams():
       teams = Team.query.all()
@@ -28,7 +30,8 @@ def init_routes(app):
          'state': team.state
          }
         for team in teams])
-      
+  
+  # ORM
   @app.route('/api/team/<int:teamId>', methods=['GET'])
   def get_team_info(teamId):
     teams = (
@@ -68,6 +71,7 @@ def init_routes(app):
     
     return jsonify(result)
   
+  # Prepared Statement
   @app.route('/api/team/<int:teamId>/summary', methods=['GET'])
   def get_team_summary(teamId):
     query = text(
@@ -89,7 +93,7 @@ def init_routes(app):
         'num_players': stat.num_players}
       for stat in summary])
 
-  
+  # ORM - convert
   @app.route('/api/team/edit', methods=['POST'])
   def edit_team():
     data = request.get_json()
@@ -104,6 +108,7 @@ def init_routes(app):
     db.session.close()
     return jsonify({"message": "Team delete successfully!"}), 200
   
+  # ORM
   @app.route('/api/team/delete/<int:teamId>', methods=['GET'])
   def delete_team(teamId):
     team = db.session.query(Team).filter(Team.team_id == teamId).first()
@@ -115,6 +120,7 @@ def init_routes(app):
     db.session.close()
     return jsonify({"message": "Team delete successfully!"}), 200
   
+  # ORM
   @app.route('/api/allPositions', methods=['GET'])
   def get_all_positions():
       positions = Positions.query.all()
@@ -123,10 +129,10 @@ def init_routes(app):
       return [position.position
         for position in positions]
       
+  # ORM
   @app.route('/api/addPlayer', methods=['POST'])
   def add_player():
       data = request.get_json()
-      print(data)
       new_player = Player(team_id=data['team_id'], first=data['first'], last=data['last'])
       db.session.add(new_player)
       db.session.flush()
@@ -139,6 +145,7 @@ def init_routes(app):
       db.session.close()
       return jsonify({"message": "Player created successfully!"}), 201
     
+  # Prepared Statement
   @app.route('/api/team/<int:teamId>/formations', methods=['GET'])
   def get_team_formations(teamId):
     query = text(
@@ -165,41 +172,9 @@ def init_routes(app):
       
     return formations
   
+  # ORM
   @app.route('/api/filteredFormations', methods=['POST'])
   def get_filtered_formations():
-    
-    # query = text("""
-    #     SELECT f.formation_name
-    #     FROM formation f
-    #     WHERE f.formation_name NOT IN
-    #       (SELECT formation.formation_name
-    #       FROM formation JOIN formationpositions ON formation.formation_id = formationpositions.formation_id
-    #       WHERE formationpositions.position IN :excluded_positions
-    #       GROUP BY formation.formation_name)
-    # """)
-    
-    # data = request.get_json()
-    # excluded_positions = tuple(data)
-    # # print(excluded_positions)
-    # query.bindparams(bindparam("excluded_positions", expanding=True))
-    # result = db.session.execute(query, {'excluded_positions':data})
-    # print(result)
-    
-
-    # # result = db.session.execute(query, excluded_positions).fetchall()
-    # # result = db.session.execute(text(query), {'excluded_positions': excluded_positions}).fetchall()
-    
-    # # placeholders = ', '.join(['%s'] * len(excluded_positions))
-    # # query = query.format(placeholders=placeholders)
-
-    # # Now execute the query with the values
-    # # result = db.session.execute(text(query), excluded_positions).fetchall()
-    
-    # formations = []
-    # for formation in result:
-    #   formations.append(formation.formation_name)
-    
-    # return formations
     
     excluded_positions = request.get_json()
     

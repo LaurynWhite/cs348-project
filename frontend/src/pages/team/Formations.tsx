@@ -11,7 +11,7 @@ function Formations({ formations }: params) {
   return (
     <>
       {formations ?
-        <div>
+        <div style={{ height: 300 }}>
           <h4 style={{ marginTop: 50 }}>Compatible Formations</h4>
           <hr />
           <List>
